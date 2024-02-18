@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <title>Exercício do Pássaro</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;  }
+    </style>
+</head>
+<body>
+
+<script>
+
+// config delimita as especificações da página html, como o tipo de renderizador, a largura e a altura
+var config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    
+
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+
+
+var game = new Phaser.Game(config);
+var passarinho;
+
+//preload carrega previamente os nossos assets no jogo, no caso carregamos as spritesheets e já delimitamos a largura e altura de cada frame
+function preload() {
+    this.load.image('bg', 'assets/bg_space.png');
+   this.load.spritesheet('verdao', 'assets/bird-green.png', {frameWidth: 75, frameHeight: 75});
+    this.load.spritesheet('vermelho', 'assets/bird-red.png', {frameWidth: 75, frameHeight: 75});
+}
+//após carregados, create cria tais assets dentro do jogo, ou seja, os coloca na tela
+function create() {
+    this.add.image(400, 300, 'bg').setScale(1.2);
+   passarinho = this.add.sprite(100, 300, 'verdao').setScale(1.3);
+   passarao = this.add.sprite(700, 100, 'vermelho').setScale(2).setFlip(true);
+
+    this.anims.create({
+        //nome da animação
+        key: 'voo',
+        //frames que serão usados
+        frames: this.anims.generateFrameNumbers('verdao', {start: 0, end: 7}),
+        //taxa de frames por segundo
+        frameRate: 10,
+        //vezes em que esses frames irão se repetir, nesse caso infinitamente
+        repeat: -1
+    });
+    //dar play na animação
+    passarinho.anims.play('voo', true);
+
+    //animação passaro vermelho, mesmo processo que o código acima
+    this.anims.create({
+        key: 'voo2',
+        frames: this.anims.generateFrameNumbers('vermelho', {start: 0, end: 7}),
+        frameRate: 10,
+        repeat: -1
+    });
+    passarao.anims.play('voo2', true);
+}
+
+
+//update é uma função que está sempre rodando e atualizando o estado do jogo
+function update() { 
+    //se a posição horizontal do passaro for 100, não vire seu sprite e inicie sua ida
+    if (passarinho.x === 100) {
+        passarinho.setFlip(false, false);
+        passarinho.ida = true;
+    }
+    //se a posição horizontal do passarinho for menor que 700 e sua ida foi iniciada, diga 'movimente-se para frente' e adicione 5 à sua posição
+    if(passarinho.x < 700 && passarinho.ida === true) {
+        console.log('movimente-se para frente');
+        passarinho.x += 5;
+    }
+    //se a posição horizontal do passarinho for 700, vire seu sprite e cesse sua ida
+    if(passarinho.x === 700) {
+        passarinho.setFlip(true, false);
+        passarinho.ida = false;
+    }
+    //se a posição horizontal do passarinho for maior que 100 e ele não estiver indo, diga 'volte' e reduza 5 à sua posição
+    if(passarinho.x > 100 && passarinho.ida === false) {
+        console.log('volte');
+        passarinho.x -= 5;
+    }
+    
+    //se a posição horizontal do passarao for 700 e a vertucal for 100, vire seu sprite e inicie sua ida
+    if(passarao.x === 700 && passarao.y === 100) {
+        passarao.setFlip(true, false);        
+        passarao.ida = true;
+    }
+    //se a posição horizontal do passarao for 100 e sua ida foi iniciada, diminua 5 em seu eixo x e aumente 5 no y, dessa forma seu movimento será na diagonal
+    if(passarao.x > 100 && passarao.ida === true) {
+       passarao.x -= 5;
+        passarao.y += 5;
+    }
+    //se a coordenada x do passarao for 300, vire seu sprite e termine sua ida
+    if(passarao.x === 300) {
+        passarao.setFlip(false, false);
+        passarao.ida = false
+    }
+    //se o passarao não estiver indo e sua coordenada x for menor ou igual a 700, aumente seu eixo x em 5 e diminua 5 do y, fazendo assim o movimento de volta
+    if(passarao.ida == false && passarao.x <= 700) {
+        passarao.x += 5;
+        passarao.y -= 5;
+    }
+}
+
+</script>
+
+
+</body>
+
+</html>
